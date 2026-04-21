@@ -390,6 +390,7 @@ class Preprocess
      int lidar_type;                /**< 当前LiDAR类型（来自LID_TYPE枚举） */
      int point_filter_num;          /**< 点过滤器：每N个点保留一个（下采样） */
      int N_SCANS;                   /**< 扫描线/通道数量 */
+     int SCAN_RATE;
      double blind;                  /**< 盲区半径：忽略比该值更近的点（米） */
      double max_scan_range;         /**< 最大有效量程（米） */
      bool feature_enabled;          /**< 特征提取主开关 */

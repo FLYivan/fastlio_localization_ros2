@@ -100,7 +100,7 @@ private:
 
         RCLCPP_INFO(this->get_logger(), "Loaded raw map: %ld points", raw_map->size());
 
-        global_map_ = std::make_shared<PointCloud>();
+        global_map_ = PointCloudPtr(new PointCloud());
         pcl::VoxelGrid<PointType> vf;
         vf.setInputCloud(raw_map);
         vf.setLeafSize(map_voxel_size_, map_voxel_size_, map_voxel_size_);
@@ -390,7 +390,7 @@ private:
     void cb_scan(const sensor_msgs::msg::PointCloud2::SharedPtr msg)
     {
         std::lock_guard<std::mutex> lock(mutex_);
-        cur_scan_raw_ = std::make_shared<PointCloud>();
+        cur_scan_raw_ = PointCloudPtr(new PointCloud());
         pcl::fromROSMsg(*msg, *cur_scan_raw_);
         cur_scan_header_ = msg->header;
         scan_received_ = true;

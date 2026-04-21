@@ -7,11 +7,11 @@ FAST-LIO定位系统启动文件（支持C++和Python节点）
 
 使用方法:
     # 使用高性能C++节点（推荐）
-    ros2 launch fast_lio_localization utlidar_localization.launch.launch.py \
-        map:=/path/to/map.pcd
+    ros2 launch fast_lio_localization utlidar_localization.launch.py \
+        map:=/home/unitree/go2_patrol/map/test.pcd
 
     # 使用Python节点（原始版本）
-    ros2 launch fast_lio_localization utlidar_localization.launch.launch.py \
+    ros2 launch fast_lio_localization utlidar_localization.launch.py  \
         map:=/path/to/map.pcd use_cpp_nodes:=false
 """
 
@@ -231,7 +231,7 @@ def generate_launch_description():
     ld.add_action(transform_fusion_python)   # Python版本
     ld.add_action(global_localization_cpp)   # C++版本
     ld.add_action(global_localization_python)  # Python版本
-    ld.add_action(pcd_publisher_node)
+    # ld.add_action(pcd_publisher_node)
     ld.add_action(rviz_node)
     
     

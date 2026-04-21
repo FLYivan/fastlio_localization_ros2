@@ -49,6 +49,7 @@ Preprocess::Preprocess() : feature_enabled(0), lidar_type(AVIA), blind(0.01), po
 {
   inf_bound = 10;
   N_SCANS = 6;
+  SCAN_RATE = 10;
   group_size = 8;           // 平面检测的滑动窗口大小
   disA = 0.01;
   disA = 0.1; // B?（可能是笔误，但保留）
@@ -805,7 +806,7 @@ void Preprocess::unilidar_handler(const sensor_msgs::msg::PointCloud2::UniquePtr
     
     added_pt.intensity = pl_orig.points[i].intensity;
 
-    added_pt.curvature = pl_orig.points[i].time * time_unit_scale; 
+    added_pt.curvature = pl_orig.points[i].time * 1.e3f; 
 
     if (added_pt.x * added_pt.x + added_pt.y * added_pt.y + added_pt.z * added_pt.z > (blind * blind))
     {
