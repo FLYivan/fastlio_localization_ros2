@@ -7,11 +7,11 @@ FAST-LIO定位系统启动文件（支持C++和Python节点）
 
 使用方法:
     # 使用高性能C++节点（推荐）
-    ros2 launch fast_lio_localization localization_cpp.launch.py \
+    ros2 launch fast_lio_localization utlidar_localization.launch.launch.py \
         map:=/path/to/map.pcd
 
     # 使用Python节点（原始版本）
-    ros2 launch fast_lio_localization localization_cpp.launch.py \
+    ros2 launch fast_lio_localization utlidar_localization.launch.launch.py \
         map:=/path/to/map.pcd use_cpp_nodes:=false
 """
 
@@ -61,7 +61,7 @@ def generate_launch_description():
 
     declare_config_file = DeclareLaunchArgument(
         "config_file",
-        default_value="mid360.yaml",
+        default_value="unilidar_l1.yaml",
         description="配置文件名"
     )
 
@@ -193,6 +193,24 @@ def generate_launch_description():
         condition=IfCondition(rviz_use)
     )
 
+    # 传感器矫正节点
+    transform_node = Node(
+        package='transform_sensors',
+        executable='transform_utlidar_onboard_imu',
+        name='transform_utlidar_onboard_imu',
+        output='screen',
+        parameters=[
+            {
+                # 'use_gpu': True,
+                'use_gpu': False,
+                'num_points': 150
+            }
+        ]
+    )
+
+
+
+
     # ========== 组装LaunchDescription ==========
 
     ld = LaunchDescription()
@@ -215,5 +233,8 @@ def generate_launch_description():
     ld.add_action(global_localization_python)  # Python版本
     ld.add_action(pcd_publisher_node)
     ld.add_action(rviz_node)
+    
+    
+    ld.add_action(transform_node)
 
     return ld

@@ -12,6 +12,8 @@
  * - Livox Avia (MID40/MID70) 通过 livox_ros_driver2
  * - Velodyne VLP-16, VLP-32 通过 velodyne_ros
  * - Ouster OS-1, OS-2 通过 ouster_ros
+ * - Hesai HESAIxt16 通过 hesai_ros
+ * - 宇树L1 通过 unilidar_ros
  * - 通用 PointCloud2（默认处理器）
  *
  * @section Output_Point_Types
@@ -52,8 +54,10 @@ enum LID_TYPE
    AVIA = 1,    /**< Livox Avia/MID系列 */
    VELO16,      /**< Velodyne VLP-16/32 */
    OUST64,      /**< Ouster OS-1/OS-2 */
-   MID360       /**< Livox MID360 */
-};
+   MID360,       /**< Livox MID360 */
+   HESAIxt16,    /**< Hesai HESAIxt16 */
+   UNILIDAR,     /**< UNILIDAR/宇树LiDAR */
+}; //{1, 2, 3, 4, 5, 6}
 
 /**
  * @enum Feature
@@ -239,6 +243,7 @@ typedef struct {
 } LivoxPointXyzitl;
 }
 
+
 POINT_CLOUD_REGISTER_POINT_STRUCT(livox_ros::LivoxPointXyzrtl,
     (float, x, x)
     (float, y, y)
@@ -256,6 +261,59 @@ POINT_CLOUD_REGISTER_POINT_STRUCT(livox_ros::LivoxPointXyzitl,
     (uint8_t, tag, tag)
     (uint8_t, line, line)
 )
+
+
+/**
+ * @namespace hesai_ros
+ * @brief Hesai特有的点类型定义
+ * @details Hesai点包含时间戳、强度、环号。
+ */
+namespace hesai_ros {
+  struct EIGEN_ALIGN16 Point {
+      PCL_ADD_POINT4D;           /**< 添加x,y,z和填充 */
+      float intensity;           /**< 强度（反射强度） */
+      double timestamp;           /**< 时间戳（秒） */
+      uint16_t ring;             /**< 激光通道/环号（0-15） */
+      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+  };
+}  // namespace hesai_ros
+
+POINT_CLOUD_REGISTER_POINT_STRUCT(hesai_ros::Point,
+   (float, x, x)
+   (float, y, y)
+   (float, z, z)
+   (float, intensity, intensity)
+   (double, timestamp, timestamp)
+   (std::uint16_t, ring, ring)
+)
+
+
+/**
+ * @namespace  Unilidar 
+ * @brief  Unilidar 特有的点类型定义
+ * @details Unilidar
+ */
+namespace unilidar_ros {
+  struct Point
+  {
+    PCL_ADD_POINT4D;           /**< 添加x,y,z和填充 */
+    PCL_ADD_INTENSITY;         /**< 添加强度 */
+    std::uint16_t ring;
+    float time;                /**< 时间戳（秒） */
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW  
+  } EIGEN_ALIGN16;
+  }
+  POINT_CLOUD_REGISTER_POINT_STRUCT(unilidar_ros::Point,
+    (float, x, x)
+    (float, y, y)
+    (float, z, z)
+    (float, intensity, intensity)
+    (std::uint16_t, ring, ring)
+    (float, time, time)
+  )
+
+
+
 
 /**
  * @class Preprocess
@@ -313,7 +371,7 @@ class Preprocess
      /**
       * @brief 配置预处理参数
       * @param feat_en 启用/禁用特征提取（true=提取边缘/表面）
-      * @param lid_type LiDAR类型枚举（AVIA, VELO16, OUST64, MID360）
+      * @param lid_type LiDAR类型枚举（AVIA, VELO16, OUST64, MID360, HESAIxt16, UNILIDAR）
       * @param bld 盲区半径（米）- 忽略比该值更接近传感器原点的点
       * @param pfilt_num 点过滤数量 - 降采样因子？（每N个点保留一个）
       * @details 设置 lidar_type、blind、point_filter_num、feature_enabled。
@@ -366,6 +424,21 @@ class Preprocess
       * @details 类似于 avia_handler，但MID360有不同的点格式。
       */
      void mid360_handler(const sensor_msgs::msg::PointCloud2::UniquePtr &msg);
+
+     /**
+      * @brief 处理 Hesai HESAIxt16
+      * @param msg HESAIxt16消息
+      * @details 类似于 avia_handler，但HESAIxt16有不同的点格式。
+      */
+     void hesai_handler(const sensor_msgs::msg::PointCloud2::UniquePtr &msg);
+
+     /**
+      * @brief 处理 UNILIDAR/宇树LiDAR
+      * @param msg UNILIDAR/宇树LiDAR消息
+      * @details 类似于 avia_handler，但UNILIDAR/宇树LiDAR有不同的点格式。
+      */
+     void unilidar_handler(const sensor_msgs::msg::PointCloud2::UniquePtr &msg);
+    
      
      /**
       * @brief 默认/未处理传感器处理器
