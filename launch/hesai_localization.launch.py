@@ -230,7 +230,7 @@ def generate_launch_description():
     ld.add_action(transform_fusion_python)   # Python版本
     ld.add_action(global_localization_cpp)   # C++版本
     ld.add_action(global_localization_python)  # Python版本
-    ld.add_action(pcd_publisher_node)
+    # ld.add_action(pcd_publisher_node)
     ld.add_action(rviz_node)
     
     ld.add_action(start_lidar_launch_file)
