@@ -163,6 +163,7 @@ install(PROGRAMS
   fast_lio_localization/publish_initial_pose.py
   fast_lio_localization/transform_fusion.py
   fast_lio_localization/invert_livox_scan.py
+  src/pcd_map_publisher.py
   DESTINATION lib/${PROJECT_NAME}
 )
 
