@@ -13,10 +13,10 @@ def generate_launch_description():
     
     
     package_path = get_package_share_directory("fast_lio_localization")
-    default_config_path = os.path.join(package_path, "config")
     default_rviz_config_path = os.path.join(package_path, "rviz", "fastlio_localization.rviz")
     
     rviz_use = LaunchConfiguration("rviz")
+    rviz_cfg = LaunchConfiguration("rviz_cfg")
     pcd_map_topic = LaunchConfiguration("pcd_map_topic")
     pcd_map_path = LaunchConfiguration("map")
     
@@ -24,6 +24,12 @@ def generate_launch_description():
         "rviz",
         default_value="true",
         description="启用RViz可视化"
+    )
+
+    declare_rviz_cfg = DeclareLaunchArgument(
+        "rviz_cfg",
+        default_value=default_rviz_config_path,
+        description="RViz配置文件"
     )
     
     declare_map_path = DeclareLaunchArgument(
@@ -44,7 +50,7 @@ def generate_launch_description():
     # PCD地图发布器（两者共享）
     pcd_publisher_node = Node(
         package="fast_lio_localization",
-        executable="pcd_map_publisher",
+        executable="pcd_to_pointclouds.py",
         name="map_publisher",
         output="screen",
         parameters=[
@@ -52,7 +58,7 @@ def generate_launch_description():
                 "file_name": pcd_map_path,
                 "tf_frame": "map",
                 "cloud_topic": pcd_map_topic,
-                "publishing_period_ms": 500,
+                "period_ms_": 500,
             }
         ],
         remappings=[("cloud_pcd", pcd_map_topic)]
@@ -70,7 +76,16 @@ def generate_launch_description():
     
     ld = LaunchDescription()
     
+    # 添加参数声明
+    ld.add_action(declare_rviz)
+    ld.add_action(declare_rviz_cfg)
+    ld.add_action(declare_map_path)
+    ld.add_action(declare_pcd_map_topic)
+
+    # 添加节点
     ld.add_action(pcd_publisher_node)
+    ld.add_action(rviz_node)
+    
 
 
     return ld
