@@ -13,3 +13,8 @@
 
     ros2 launch fast_lio_localization hesai_localization.launch.py \
          map:=/path/to/map.pcd
+
+
+    ros2 launch fast_lio_localization utlidar_localization.launch.py \
+        map:=/home/unitree/go2_patrol/map/test.pcd \
+        config_file:=l1_test.yaml

@@ -120,6 +120,26 @@ void Preprocess::process(const livox_ros_driver2::msg::CustomMsg::UniquePtr &msg
  */
 void Preprocess::process(const sensor_msgs::msg::PointCloud2::UniquePtr &msg, PointCloudXYZI::Ptr &pcl_out)
 {
+  switch (time_unit)
+  {
+  case SEC:
+    time_unit_scale = 1.e3f;
+    break;
+  case MS:
+    time_unit_scale = 1.f;
+    break;
+  case US:
+    time_unit_scale = 1.e-3f;
+    break;
+  case NS:
+    time_unit_scale = 1.e-6f;
+    break;
+  default:
+    time_unit_scale = 1.f;
+    break;
+  }
+
+
   switch (lidar_type)
   {
   case OUST64:
@@ -777,48 +797,49 @@ void Preprocess::hesai_handler(const sensor_msgs::msg::PointCloud2::UniquePtr &m
  * @brief Unilidar/宇树L1 点云处理函数
  * @param msg PointCloud2 消息（Unilidar/宇树L1 格式）
  */
-void Preprocess::unilidar_handler(const sensor_msgs::msg::PointCloud2::UniquePtr &msg) 
+void Preprocess::unilidar_handler(const sensor_msgs::msg::PointCloud2::UniquePtr &msg)
 {
-  pl_surf.clear();
-  pl_corn.clear();
-  pl_full.clear();
+    pl_surf.clear();
+    pl_corn.clear();
+    pl_full.clear();
 
-  pcl::PointCloud<unilidar_ros::Point> pl_orig;
-  pcl::fromROSMsg(*msg, pl_orig);
-  int plsize = pl_orig.points.size();
-  if (plsize == 0) return;
+    pcl::PointCloud<unilidar_ros::Point> pl_orig;
+    pcl::fromROSMsg(*msg, pl_orig);
+    int plsize = pl_orig.points.size();
+    if (plsize == 0) return;
 
-  pl_surf.reserve(plsize);
+    pl_surf.reserve(plsize);
 
-  // std::cout << "plsize = " << plsize << ", given_offset_time = " << given_offset_time << std::endl;
-  int countElimnated = 0;
-  for (int i = 0; i < plsize; i++)
-  {
-    PointType added_pt;
-    
-    added_pt.normal_x = 0;
-    added_pt.normal_y = 0;
-    added_pt.normal_z = 0;
-
-    added_pt.x = pl_orig.points[i].x;
-    added_pt.y = pl_orig.points[i].y;
-    added_pt.z = pl_orig.points[i].z;
-    
-    added_pt.intensity = pl_orig.points[i].intensity;
-
-    added_pt.curvature = pl_orig.points[i].time * 1.e3f; 
-
-    if (added_pt.x * added_pt.x + added_pt.y * added_pt.y + added_pt.z * added_pt.z > (blind * blind))
+    // std::cout << "plsize = " << plsize << ", given_offset_time = " << given_offset_time << std::endl;
+    int countElimnated = 0;
+    for (int i = 0; i < plsize; i++)
     {
-      pl_surf.points.push_back(added_pt);
-    }
-    else
-    {
-      countElimnated++;
-    }
-  }
+      PointType added_pt;
+      
+      added_pt.normal_x = 0;
+      added_pt.normal_y = 0;
+      added_pt.normal_z = 0;
 
-  // std::cout << "pl_surf.size() = " << pl_surf.size() << ", countElimnated = " << countElimnated << std::endl;
+      added_pt.x = pl_orig.points[i].x;
+      added_pt.y = pl_orig.points[i].y;
+      added_pt.z = pl_orig.points[i].z;
+      
+      added_pt.intensity = pl_orig.points[i].intensity;
+
+      added_pt.curvature = pl_orig.points[i].time * time_unit_scale; 
+
+      if (added_pt.x * added_pt.x + added_pt.y * added_pt.y + added_pt.z * added_pt.z > (blind * blind))
+      {
+        pl_surf.points.push_back(added_pt);
+      }
+      else
+      {
+        countElimnated++;
+      }
+    }
+
+    // std::cout << "pl_surf.size() = " << pl_surf.size() << ", countElimnated = " << countElimnated << std::endl;
+    
 }
 
 

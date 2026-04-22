@@ -59,6 +59,15 @@ enum LID_TYPE
    UNILIDAR,     /**< UNILIDAR/宇树LiDAR */
 }; //{1, 2, 3, 4, 5, 6}
 
+enum TIME_UNIT
+{
+  SEC = 0,
+  MS = 1,
+  US = 2,
+  NS = 3
+};
+
+
 /**
  * @enum Feature
  * @brief 点云分割的特征分类
@@ -395,6 +404,8 @@ class Preprocess
      double max_scan_range;         /**< 最大有效量程（米） */
      bool feature_enabled;          /**< 特征提取主开关 */
      bool given_offset_time;        /**< 如果为true，使用提供的的时间戳偏移 */
+     float time_unit_scale;
+     int time_unit;
     // ros::Publisher pub_full, pub_surf, pub_corn;  // Publishers (ROS 1 style, commented)
   
    private:
