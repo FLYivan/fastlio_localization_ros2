@@ -21,7 +21,7 @@
             scan_line: 16
             scan_rate: 14                # 确认utlidar的实际频率,
             timestamp_unit: 2            # the unit of time/t field in the PointCloud2 rostopic: 0-second, 1-milisecond, 2-microsecond, 3-nanosecond.
-            blind: 0.1
+            blind: 0.3
 
         mapping:
             acc_cov: 0.1

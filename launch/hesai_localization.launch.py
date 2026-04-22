@@ -8,7 +8,7 @@ FAST-LIO定位系统启动文件（支持C++和Python节点）
 使用方法:
     # 使用高性能C++节点（推荐）
     ros2 launch fast_lio_localization hesai_localization.launch.py \
-        map:=/path/to/map.pcd
+        map:=/home/unitree/go2_patrol/map/test.pcd
 
     # 使用Python节点（原始版本）
     ros2 launch fast_lio_localization hesai_localization.launch.py \
