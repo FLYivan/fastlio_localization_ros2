@@ -808,9 +808,14 @@ void Preprocess::unilidar_handler(const sensor_msgs::msg::PointCloud2::UniquePtr
     int plsize = pl_orig.points.size();
     if (plsize == 0) return;
 
+    // 检测时间戳是否有效，启用运动去畸变
+    if (pl_orig.points[plsize - 1].time > 0) {
+      given_offset_time = true;
+    }
+
     pl_surf.reserve(plsize);
 
-    // std::cout << "plsize = " << plsize << ", given_offset_time = " << given_offset_time << std::endl;
+    std::cout << "plsize = " << plsize << ", given_offset_time = " << given_offset_time << std::endl;
     int countElimnated = 0;
     for (int i = 0; i < plsize; i++)
     {
@@ -826,7 +831,14 @@ void Preprocess::unilidar_handler(const sensor_msgs::msg::PointCloud2::UniquePtr
       
       added_pt.intensity = pl_orig.points[i].intensity;
 
-      added_pt.curvature = pl_orig.points[i].time * time_unit_scale; 
+      added_pt.curvature = pl_orig.points[i].time * time_unit_scale;
+
+      // 显式过滤无回波的 (0,0,0) 占位点
+      if (added_pt.x == 0.0f && added_pt.y == 0.0f && added_pt.z == 0.0f)
+      {
+        countElimnated++;
+        continue;
+      }
 
       if (added_pt.x * added_pt.x + added_pt.y * added_pt.y + added_pt.z * added_pt.z > (blind * blind))
       {
@@ -838,7 +850,7 @@ void Preprocess::unilidar_handler(const sensor_msgs::msg::PointCloud2::UniquePtr
       }
     }
 
-    // std::cout << "pl_surf.size() = " << pl_surf.size() << ", countElimnated = " << countElimnated << std::endl;
+    std::cout << "pl_surf.size() = " << pl_surf.size() << ", countElimnated = " << countElimnated << std::endl;
     
 }
 
