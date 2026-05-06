@@ -9,7 +9,19 @@
         rviz:=true
 
 
+python3 -m pip show numpy
 
+python3 -m pip show open3d
+python3 -m pip show tf_transformations
+
+apt list --installed | grep numpy
+
+
+python3 - <<'PY'
+import numpy
+print("version:", numpy.__version__)
+print("path:", numpy.__file__)
+PY
 
 
 
