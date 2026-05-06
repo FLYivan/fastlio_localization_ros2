@@ -1,7 +1,7 @@
 /**:
     ros__parameters:
         feature_extract_enable: false
-        point_filter_num: 3
+        point_filter_num: 4
         max_iteration: 3
         filter_size_surf: 0.5
         filter_size_map: 0.5
@@ -38,12 +38,12 @@
                             0., 0., 1.]
 
         publish:
-            path_en: true                # true: publish Path
-            effect_map_en: true         # true: publish Effects
-            map_en: true                 # true: publish Map cloud
+            path_en: false                # true: publish Path
+            effect_map_en: false        # true: publish Effects
+            map_en: false                 # true: publish Map cloud
             scan_publish_en:  true       # false: close all the point cloud output
-            dense_publish_en: true      # false: low down the points number in a global-frame point clouds scan.
-            scan_bodyframe_pub_en: true  # true: output the point cloud scans in IMU-body-frame
+            dense_publish_en: false     # false: low down the points number in a global-frame point clouds scan. 
+            scan_bodyframe_pub_en: false  # true: output the point cloud scans in IMU-body-frame
 
         pcd_save:
             pcd_save_en: false
@@ -52,5 +52,5 @@
 
         global_map:
             global_map_enabled: true
-            global_map_path: "/home/unitree/go2_patrol/map/test.pcd"            # 调整为实际先验地图保存位置
+            global_map_path: "/home/unitree/dog_robot/air_ground_ws/fastlio_localization_ros2/PCD/scans.pcd"            # 调整为实际先验地图保存位置
             global_map_voxel_size: 0.4
