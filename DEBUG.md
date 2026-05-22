@@ -9,7 +9,7 @@
         rviz:=true
 
 
-    ros2 launch fast_lio_localization mid360_localization.launch.py \
+    ros2 launch fast_lio_localization hesai_localization.launch.py \
         map:=/home/unitree/dog_robot/air_ground_ws/fastlio_localization_ros2/PCD/scans.pcd \
         rviz:=true
 
